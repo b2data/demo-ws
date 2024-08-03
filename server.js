@@ -1,6 +1,11 @@
 const WebSocket = require("ws");
+const ReadLine = require("readline");
 
 const server = new WebSocket.Server({ port: 8080 });
+const rl = ReadLine.createInterface({
+  input: process.stdin,
+  output: process.stdout
+});
 
 const devices = [
   { uuid: "32ce7d81-d392-48d0-8c40-eb8b507d376a" },
@@ -120,4 +125,36 @@ function handleSetNumReset(ws, data) {
   };
   console.log("Sending SetNumReset: ", JSON.stringify(response, null, 2));
   ws.send(JSON.stringify(response));
+}
+
+
+rl.on('line', (input) => {
+  const [command, ...args] = input.split(' ');
+
+  switch (command) {
+    case "devreq":
+      handleDevicesReqStatusFromConsole(...args);
+      break;
+    case "setnum":
+      handleSetNumRequestFromConsole(...args);
+      break;
+    default:
+      console.log(`Unknown command: ${command}. Allow: devreq, setnum`);
+  }
+});
+
+function handleDevicesReqStatusFromConsole(...args) {
+  server.clients.forEach(client => {
+    if (client.readyState === WebSocket.OPEN) {
+      handleDevicesReqStatus(client);
+    }
+  });
+}
+
+function handleSetNumRequestFromConsole(...args) {
+  server.clients.forEach(client => {
+    if (client.readyState === WebSocket.OPEN) {
+      handleSetNumRequest(client);
+    }
+  });
 }
