@@ -18,7 +18,8 @@ server.on("connection", (ws) => {
       const packet = JSON.parse(message);
       handlePacket(ws, packet);
     } catch (error) {
-      console.error("Invalid JSON:", error);
+      //console.error("Invalid JSON:", error);
+      console.log("Received text message:", message.toString());
     }
   });
 
