@@ -1,3 +1,4 @@
+const dnssd = require('dnssd');
 const WebSocket = require("ws");
 const ReadLine = require("readline");
 
@@ -8,12 +9,22 @@ const rl = ReadLine.createInterface({
 });
 
 const devices = [
-  { uuid: "32ce7d81-d392-48d0-8c40-eb8b507d376a" },
+  //{ uuid: "32ce7d81-d392-48d0-8c40-eb8b507d376a" },
+  { uuid: "c75c2dd8-5089-4643-9a2a-2908fa77de6a" },
   { uuid: "0a56a1ff-d8ab-468b-8b64-7a4d841e6cb4" },
   { uuid: "a3f9e13c-8ced-41de-98d9-96b678ac2a4e" },
 ];
 
 const transaction = "86491bfd-a241-4c96-a738-dcb2fbd40017";
+
+
+// Настройка и запуск mDNS сервиса для WebSocket
+const service = new dnssd.Advertisement(dnssd.tcp('ws'), 8080, {
+    name: 'PTL WebSocket Server',
+    host: 'ptl_ws'
+});
+service.start();
+
 
 server.on("connection", (ws) => {
   console.log("Client connected");
